@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="hero">
+  <div class="hero-content">
+    <p class="eyebrow">{{ t('hero_eyebrow') }}</p>
+    <h1>{{ t('hero_title') }}</h1>
+    <p class="hero-sub">{{ t('hero_sub') }}</p>
+    <div class="hero-actions">
+      <a class="button" href="#advisor">{{ t('hero_start') }} →</a>
+      <button id="demo-start" class="ghost-button" type="button" onclick="window._demoOpen && window._demoOpen()">{{ t('hero_demo') }}</button>
+    </div>
+  </div>
+  <div class="hero-card">
+    <div class="hero-icon">🌱</div>
+    <b>{{ t('hero_card_title') }}</b>
+    <ol>
+      <li>{{ t('hero_step1') }}</li>
+      <li>{{ t('hero_step2') }}</li>
+      <li>{{ t('hero_step3') }}</li>
+    </ol>
+  </div>
+</header>
+
+<main>
+  <section id="weather-section" class="weather-box">
+    <div class="weather-intro">
+      <p class="eyebrow">{{ t('weather_eyebrow') }}</p>
+      <h2>{{ t('weather_title') }}</h2>
+      <p class="muted">{{ t('weather_sub') }}</p>
+    </div>
+    <form id="weather-form" class="weather-form">
+      <label>{{ t('weather_state') }}
+        <select id="weather-state" required>
+          <option value="">—</option>
+          {% for state in locations %}
+          <option value="{{ state }}">{{ state }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>{{ t('weather_city') }}
+        <select id="weather-city" required disabled>
+          <option value="">Select state first</option>
+        </select>
+      </label>
+      <button class="button" type="submit">{{ t('weather_get') }}</button>
+    </form>
+    <div id="weather-result" class="weather-result" hidden></div>
+    <div id="seasonal-tip" class="seasonal-tip" hidden></div>
+  </section>
+
+  <section id="advisor" class="advisor">
+    <div id="advisor-form" class="panel">
+      <p class="eyebrow">{{ t('advisor_eyebrow') }}</p>
+      <h2>{{ t('advisor_title') }}</h2>
+      <p class="muted">{{ t('advisor_sub') }}</p>
+      <form id="recommendation-form">
+        <div class="form-grid">
+          <label>Nitrogen (N) <small>kg/ha</small>
+            <input name="n" type="number" step="1" min="0" max="140" value="90" required>
+          </label>
+          <label>Phosphorus (P) <small>kg/ha</small>
+            <input name="p" type="number" step="1" min="5" max="145" value="42" required>
+          </label>
+          <label>Potassium (K) <small>kg/ha</small>
+            <input name="k" type="number" step="1" min="5" max="205" value="43" required>
+          </label>
+          <label>Soil pH
+            <input name="soil_ph" type="number" step="0.1" min="3.5" max="10" value="6.5" required>
+          </label>
+          <label>Temperature <small>°C</small>
+            <input name="temperature" type="number" step="0.1" min="8" max="45" value="25" required>
+          </label>
+          <label>Humidity <small>%</small>
+            <input name="humidity" type="number" step="0.1" min="14" max="100" value="80" required>
+          </label>
+          <label>Season rainfall <small>mm</small>
+            <input name="rainfall" type="number" step="0.1" min="20" max="300" value="200" required>
+          </label>
+        </div>
+        <p id="form-error" class="error"></p>
+        <button class="button wide" type="submit">{{ t('advisor_submit') }} →</button>
+      </form>
+    </div>
+
+    <aside id="result-panel" class="result panel">
+      <div id="result-empty">
+        <div class="empty-icon">🌾</div>
+        <h2>{{ t('result_empty_title') }}</h2>
+        <p class="muted">{{ t('result_empty_sub') }}</p>
+      </div>
+      <div id="result-content" hidden>
+        <p class="eyebrow">{{ t('result_top') }}</p>
+        <h2 id="crop-name">—</h2>
+        <div class="score">
+          <b id="confidence-value">—</b>
+          <span>{{ t('result_confidence') }}</span>
+          <i><em id="confidence-bar"></em></i>
+        </div>
+        <p id="input-quality" class="quality-badge"></p>
+        <h3>{{ t('result_alternatives') }}</h3>
+        <div id="alternatives" class="chips"></div>
+        <h3>{{ t('result_influence') }}</h3>
+        <div id="importance"></div>
+        <div class="calendar">
+          <b>{{ t('result_calendar') }}</b>
+          <div id="calendar-content"></div>
+        </div>
+        <div class="fertilizer-box">
+          <b>{{ t('result_fertilizer') }}</b>
+          <p id="fertilizer-text"></p>
+          <div id="fertilizer-products" class="product-links"></div>
+        </div>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<div id="demo-overlay" class="demo-overlay" hidden>
+  <div class="demo-modal">
+    <div class="demo-progress"><span id="demo-step-indicator">1 / 4</span></div>
+    <h2 id="demo-step-title">{{ t('demo_title') }}</h2>
+    <p id="demo-step-text">{{ t('demo_step_welcome') }}</p>
+    <div class="demo-visual" id="demo-visual">🌾</div>
+    <div class="demo-actions">
+      <button id="demo-sample" class="button" type="button" onclick="window._demoSample()">{{ t('demo_sample') }}</button>
+      <a id="demo-next" class="button" href="#advisor" onclick="window._demoNextClick && window._demoNextClick();">{{ t('demo_next') }}</a>
+      <a id="demo-skip" class="ghost-button dark" href="#advisor" onclick="window._demoClose && window._demoClose();">{{ t('demo_skip') }}</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.CROPWISE = {
+    locations: {{ locations | tojson }},
+    seasonalTips: {{ seasonal_tips | tojson }},
+    sampleData: {{ sample_data | tojson }},
+    products: {{ products | tojson }},
+    i18n: {
+      weatherLoading: {{ t('weather_loading') | tojson }},
+      weatherApply: {{ t('weather_apply') | tojson }},
+      weatherTemp: {{ t('weather_temp') | tojson }},
+      weatherHumidity: {{ t('weather_humidity') | tojson }},
+      weatherWind: {{ t('weather_wind') | tojson }},
+      weatherRain: {{ t('weather_rain') | tojson }},
+      seasonalTip: {{ t('seasonal_tip') | tojson }},
+      advisorChecking: {{ t('advisor_checking') | tojson }},
+      advisorSubmit: {{ t('advisor_submit') | tojson }},
+      demoSteps: [
+        {{ t('demo_step_welcome') | tojson }},
+        {{ t('demo_step_weather') | tojson }},
+        {{ t('demo_step_soil') | tojson }},
+        {{ t('demo_step_submit') | tojson }}
+      ],
+      demoNext: {{ t('demo_next') | tojson }},
+      demoFinish: {{ t('demo_finish') | tojson }},
+      resultShop: {{ t('result_shop') | tojson }}
+    }
+  };
+</script>
+{% endblock %}

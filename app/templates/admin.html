@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<main class="page">
+  <p class="eyebrow">ADMIN</p>
+  <h1>Farm platform overview</h1>
+
+  <div class="stats-row">
+    <div class="stat-card"><b>{{ stats['users'] }}</b><span>Users</span></div>
+    <div class="stat-card"><b>{{ stats['orders'] }}</b><span>Orders</span></div>
+    <div class="stat-card"><b>{{ stats['recommendations'] }}</b><span>Recommendations</span></div>
+  </div>
+
+  <div class="dashboard-grid">
+    <section class="panel">
+      <h2>Users</h2>
+      {% for item in users %}
+      <div class="list-row">
+        <b>{{ item['name'] }}</b>
+        <span class="muted">{{ item['email'] }}</span>
+      </div>
+      {% endfor %}
+    </section>
+
+    <section class="panel">
+      <h2>Orders & shipping</h2>
+      {% for item in orders %}
+      <div class="order-card admin-order">
+        <div class="order-header">
+          <b>#{{ item['id'] }} · {{ item['name'] }}</b>
+          <span>₹{{ item['total']|int }}</span>
+        </div>
+        <form method="post" action="/admin/orders/{{ item['id'] }}/status" class="status-form">
+          <select name="status">
+            {% for status in statuses %}
+            <option value="{{ status }}" {{ 'selected' if status == item['status'] else '' }}>{{ status }}</option>
+            {% endfor %}
+          </select>
+          <button class="button small" type="submit">Update</button>
+        </form>
+        <span class="muted">{{ item['created_at'][:10] }}</span>
+      </div>
+      {% else %}
+      <p class="muted">No orders yet.</p>
+      {% endfor %}
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top:28px">
+    <h2>Product catalogue</h2>
+    <div class="product-grid">
+      {% for product in products %}
+      <div class="product-card compact">
+        <span class="product-type">{{ product['type'] }}</span>
+        <b>{{ product['name'] }}</b>
+        <span>₹{{ product['price'] }} / {{ product['unit'] }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</main>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<main class="page narrow">
+  <p class="eyebrow">CHECKOUT</p>
+  <h1>Delivery details</h1>
+
+  <section class="panel">
+    {% for item in items %}
+    <div class="list-row">
+      <b>{{ item['name'] }}</b>
+      <span>₹{{ item['price'] }} · {{ item['unit'] }}</span>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <span>🛒</span>
+      <p>Your cart is empty.</p>
+      <a class="button small" href="/shop">Browse fertilizer</a>
+    </div>
+    {% endfor %}
+
+    {% if items %}
+    <div class="checkout-total">
+      <h2>Total: ₹{{ total }}</h2>
+      <p class="shipping-badge">🚚 Free demo shipping · Estimated 3–5 business days</p>
+    </div>
+    <form method="post" class="checkout-form">
+      <label>Farm delivery address
+        <textarea name="address" required minlength="12" placeholder="Village, district, state, PIN code"></textarea>
+      </label>
+      <button class="button wide" type="submit">Place order →</button>
+    </form>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

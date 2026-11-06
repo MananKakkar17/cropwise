@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<main class="page">
+  <p class="eyebrow">MY FARM</p>
+  <h1>Hello, {{ user['name'] }}.</h1>
+  <p class="muted">Your saved crop plans and fertilizer delivery tracking.</p>
+
+  <div class="dashboard-grid">
+    <section class="panel">
+      <h2>Recent crop plans</h2>
+      {% for row in history %}
+      <div class="list-row">
+        <div>
+          <b>{{ row['crop'] }}</b>
+          <span class="chip small">{{ row['confidence'] }}% match</span>
+        </div>
+        <span class="muted">{{ row['created_at'][:10] }}</span>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <span>🌾</span>
+        <p>No saved recommendations yet.</p>
+        <a class="button small" href="/">Start a field check</a>
+      </div>
+      {% endfor %}
+    </section>
+
+    <section class="panel">
+      <h2>Delivery tracking</h2>
+      {% for order in orders %}
+      <div class="order-card">
+        <div class="order-header">
+          <b>Order #{{ order['id'] }}</b>
+          <span class="order-total">₹{{ order['total']|int }}</span>
+        </div>
+        <div class="tracking-bar">
+          {% set idx = statuses.index(order['status']) if order['status'] in statuses else 0 %}
+          {% for status in statuses %}
+          <span class="track-step {{ 'done' if loop.index0 <= idx else '' }} {{ 'current' if status == order['status'] else '' }}">
+            {{ status }}
+          </span>
+          {% endfor %}
+        </div>
+        <p class="muted">{{ order['address'][:60] }}{% if order['address']|length > 60 %}…{% endif %}</p>
+        <span class="muted">{{ order['created_at'][:10] }}</span>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <span>📦</span>
+        <p>No fertilizer orders yet.</p>
+        <a class="button small" href="/shop">Visit the store</a>
+      </div>
+      {% endfor %}
+    </section>
+  </div>
+</main>
+{% endblock %}

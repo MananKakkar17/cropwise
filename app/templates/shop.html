@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<main class="page">
+  <p class="eyebrow">FARM SUPPLIES</p>
+  <h1>Fertilizer, delivered to your farm.</h1>
+  <p class="muted">Based on your crop recommendation, choose suitable fertilizers. Free demo shipping across India.</p>
+
+  <div class="product-grid">
+    {% for product in products %}
+    <article class="panel product-card">
+      <span class="product-type">{{ product['type'] }}</span>
+      <h2>{{ product['name'] }}</h2>
+      <p class="muted">{{ product['description'] }}</p>
+      <div class="product-meta">
+        <b>₹{{ product['price'] }}</b>
+        <span>/ {{ product['unit'] }}</span>
+      </div>
+      <div class="shipping-badge">🚚 Free demo shipping</div>
+      <button class="button add-cart" data-product="{{ product['id'] }}" type="button">Add to cart</button>
+    </article>
+    {% endfor %}
+  </div>
+  <p class="note">Demo store — payment gateway not connected. Orders appear in your farm dashboard for tracking.</p>
+</main>
+{% endblock %}
